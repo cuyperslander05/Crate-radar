@@ -10,3 +10,7 @@ coverage/
 # Electron desktop build output
 release/
 
+
+# Local verification temp files
+.asar-list.txt
+.remote-check/

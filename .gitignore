@@ -17,3 +17,6 @@ release/
 
 runlogs.zip
 runlogs-extract/
+
+runlogs*
+runlogs2*/

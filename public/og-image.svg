@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Crate — real-time social music">
+  <rect width="1200" height="630" fill="#1A1411"/>
+  <circle cx="980" cy="150" r="260" fill="#C8A35B" opacity="0.08"/>
+  <circle cx="200" cy="520" r="200" fill="#C1553B" opacity="0.08"/>
+
+  <g transform="translate(96 232)">
+    <circle cx="34" cy="34" r="30" fill="none" stroke="#C8A35B" stroke-width="4"/>
+    <circle cx="34" cy="34" r="16" fill="none" stroke="#C8A35B" stroke-width="3" opacity="0.55"/>
+    <circle cx="34" cy="34" r="6.5" fill="#C1553B"/>
+  </g>
+
+  <text x="96" y="230" fill="#C8A35B" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700" letter-spacing="8">CRATE</text>
+  <text x="176" y="290" fill="#F2EBE1" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="66" font-weight="800">Listen together,</text>
+  <text x="96" y="368" fill="#F2EBE1" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="66" font-weight="800">perfectly in sync.</text>
+  <text x="96" y="432" fill="#8C8069" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="26">Shared queues, live voting, and your sound identity.</text>
+</svg>

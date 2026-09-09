@@ -1,0 +1,6 @@
+{
+  "name": "Crate",
+  "description": "Real-time social music: listen together, vote on the room queue, and track your sound identity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

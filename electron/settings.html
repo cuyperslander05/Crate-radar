@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>Crate - First-run setup</title>
+<style>
+  :root { --bg:#1a1514; --card:#2b2321; --ink:#f2ede4; --dim:#a89e8f; --moss:#7a8b76; --accent:#c26e53; --error:#c26e53; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 system-ui,sans-serif; }
+  .wrap { max-width:640px; margin:32px auto; }
+  h1 { font-size:22px; }
+  p { color:var(--dim); }
+  .card { background:var(--card); border-radius:10px; padding:18px 20px; margin:16px 0; }
+  label { display:block; font-size:12.5px; color:var(--dim); margin:10px 0 4px; font-weight:600; }
+  input { width:100%; box-sizing:border-box; background:#1f1a18; color:var(--ink); border:1px solid #3a342f; border-radius:6px; padding:9px 10px; font:inherit; }
+  input:focus { outline:2px solid var(--moss); }
+  button { background:var(--moss); color:#0f1311; border:0; border-radius:8px; padding:11px 22px; font:inherit; font-weight:600; cursor:pointer; }
+  .hint { font-size:12px; color:var(--dim); margin-top:8px; }
+  #msg { display:none; }
+  #msg.visible { display:block; color:var(--accent); font-weight:600; }
+  details { margin-top:6px; }
+  summary { cursor:pointer; color:var(--dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Crate desktop — first-run setup</h1>
+  <p>Before Crate can start it needs the same backend settings as the web app: a PostgreSQL
+     database, a Firebase project (Google sign-in + Admin SDK), and a Spotify application.
+     These are kept only on <strong>this computer</strong> in
+     <code>%APPDATA%/crate-config/settings.json</code>. See
+     <code>docs/desktop.md</code> in the repository for how to obtain every value.</p>
+
+  <div class="card">
+    <label>Port (leave default 3001)</label>
+    <input id="port" type="number">
+
+    <label>APP_SECRET (32-byte hex)</label>
+    <input id="appSecret" type="password" autocomplete="off">
+
+    <details>
+      <summary>PostgreSQL</summary>
+      <label>SQL_HOST</label><input id="sqlHost">
+      <label>SQL_PORT</label><input id="sqlPort">
+      <label>SQL_USER</label><input id="sqlUser">
+      <label>SQL_PASSWORD</label><input id="sqlPassword" type="password">
+      <label>SQL_DB_NAME</label><input id="sqlDbName">
+    </details>
+
+    <details>
+      <summary>Firebase (Admin SDK service account)</summary>
+      <label>FIREBASE_PROJECT_ID</label><input id="fbProject">
+      <label>FIREBASE_CLIENT_EMAIL</label><input id="fbEmail">
+      <label>FIREBASE_PRIVATE_KEY (one line, literal \n)</label><input id="fbKey" type="password">
+    </details>
+
+    <details open>
+      <summary>Spotify</summary>
+      <label>SPOTIFY_CLIENT_ID</label><input id="spId">
+      <label>SPOTIFY_CLIENT_SECRET</label><input id="spSecret" type="password">
+    </details>
+
+    <div style="margin-top:18px">
+      <button id="save">Save & start Crate</button>
+    </div>
+    <p id="msg" class="hint"></p>
+  </div>
+
+  <p class="hint">Tips: generate <code>APP_SECRET</code> with
+     <code>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code>.
+     Run migrations against your database once with <code>npm run db:migrate</code>.</p>
+</div>
+
+<script>
+  const { ipcRenderer } = require('electron');
+
+  function $(id) { return document.getElementById(id); }
+
+  async function load() {
+    const { settings } = await ipcRenderer.invoke('settings:get');
+    const set = (id, v) => { $(id).value = v == null ? '' : v; };
+    set('port', settings.port);
+    set('appSecret', settings.APP_SECRET);
+    set('sqlHost', settings.SQL_HOST);
+    set('sqlPort', settings.SQL_PORT);
+    set('sqlUser', settings.SQL_USER);
+    set('sqlPassword', settings.SQL_PASSWORD);
+    set('sqlDbName', settings.SQL_DB_NAME);
+    set('fbProject', settings.FIREBASE_PROJECT_ID);
+    set('fbEmail', settings.FIREBASE_CLIENT_EMAIL);
+    set('fbKey', settings.FIREBASE_PRIVATE_KEY);
+    set('spId', settings.SPOTIFY_CLIENT_ID);
+    set('spSecret', settings.SPOTIFY_CLIENT_SECRET);
+  }
+
+  async function save() {
+    const settings = {
+      port: Number($('port').value) || 3001,
+      APP_SECRET: $('appSecret').value,
+      SQL_HOST: $('sqlHost').value,
+      SQL_PORT: $('sqlPort').value,
+      SQL_USER: $('sqlUser').value,
+      SQL_PASSWORD: $('sqlPassword').value,
+      SQL_DB_NAME: $('sqlDbName').value,
+      FIREBASE_PROJECT_ID: $('fbProject').value,
+      FIREBASE_CLIENT_EMAIL: $('fbEmail').value,
+      FIREBASE_PRIVATE_KEY: $('fbKey').value,
+      SPOTIFY_CLIENT_ID: $('spId').value,
+      SPOTIFY_CLIENT_SECRET: $('spSecret').value,
+    };
+    const msg = $('msg');
+    msg.className = 'hint visible';
+    msg.textContent = 'Saving…';
+    const { complete } = await ipcRenderer.invoke('settings:save', settings);
+    if (!complete) {
+      msg.textContent = 'Some required fields are empty (APP_SECRET, SQL_PASSWORD, FIREBASE_PROJECT_ID, Spotify ID/secret).';
+      return;
+    }
+    msg.textContent = 'Saved. Starting Crate…';
+    await ipcRenderer.invoke('settings:relaunch');
+  }
+
+  $('save').addEventListener('click', save);
+  load();
+</script>
+</body>
+</html>

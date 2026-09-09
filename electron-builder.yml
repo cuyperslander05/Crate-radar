@@ -1,0 +1,28 @@
+﻿# electron-builder configuration for the Crate desktop app.
+# Built by .github/workflows/desktop-release.yml on a Windows runner so the
+# installer is a native Windows .exe.
+
+appId: be.crate.desktop
+productName: Crate
+directories:
+  output: release
+  buildResources: electron
+
+# The Electron entry point and the files that must ship with it.
+files:
+  - electron/**
+  - dist/**
+
+# The backend bundle (dist/server.cjs) is built with esbuild --packages=external,
+# so its dependencies live in node_modules and must travel with the app.
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: ${productName}-${version}-setup.${ext}
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-${version}-setup.${ext}

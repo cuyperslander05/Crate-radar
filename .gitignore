@@ -14,3 +14,6 @@ release/
 # Local verification temp files
 .asar-list.txt
 .remote-check/
+
+runlogs.zip
+runlogs-extract/
